@@ -1,2 +1,3 @@
-.qodo
-node_modules
+.vercel
+node_modules/
+.env

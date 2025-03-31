@@ -4,14 +4,17 @@ const axios = require("axios");
 const cors = require("cors");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+app.use(cors({ origin: "*" })); // Allow all origins
 
-app.use(cors());
+const TMDB_API_KEY = process.env.TMDB_API_KEY;
 
 app.get("/api/tmdb", async (req, res) => {
   try {
     const { path, ...queryParams } = req.query;
+
+    if (!path) {
+      return res.status(400).json({ error: "Path is required" });
+    }
 
     const options = {
       method: "GET",
@@ -22,11 +25,12 @@ app.get("/api/tmdb", async (req, res) => {
       params: queryParams,
     };
 
+    console.log(`Fetching: https://api.themoviedb.org/3/${path}`);
+
     const response = await axios.get(
       `https://api.themoviedb.org/3/${path}`,
       options
     );
-
     res.json(response.data);
   } catch (error) {
     res
@@ -35,4 +39,5 @@ app.get("/api/tmdb", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Export Express app for Vercel
+module.exports = app;
