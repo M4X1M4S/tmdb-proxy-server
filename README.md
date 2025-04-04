@@ -22,7 +22,7 @@ To run the Vercel serverless function locally:
    ```sh
    vercel
    ```
-3. **Pull environment variables from Vercel.**  
+3. **Pull environment variables from Vercel:**  
    ```sh
    vercel env pull
    ```
