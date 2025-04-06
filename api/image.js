@@ -1,12 +1,6 @@
-require("dotenv").config();
-const express = require("express");
-const axios = require("axios");
-const cors = require("cors");
 const https = require("https");
-const app = express();
-app.use(cors({ origin: "*" })); // Allow all origins
-import https from "https";
-app.get("/api/image", (req, res) => {
+
+module.exports = (req, res) => {
   const { file_path, size = "w500" } = req.query;
 
   if (!file_path) {
@@ -27,5 +21,4 @@ app.get("/api/image", (req, res) => {
         details: err.message,
       });
     });
-});
-module.exports = app;
+};
