@@ -38,6 +38,21 @@ app.get("/api/tmdb", async (req, res) => {
       .json({ error: "Failed to fetch data", details: error.message });
   }
 });
+app.get("/api/tmdb/image", (req, res) => {
+  const { file_path, size = "w500" } = req.query;
+
+  if (!file_path) {
+    return res.status(400).json({ error: "file_path is required" });
+  }
+
+  // Ensure the file path starts with a slash
+  const safePath = file_path.startsWith("/") ? file_path : `/${file_path}`;
+
+  const imageUrl = `https://image.tmdb.org/t/p/${size}${safePath}`;
+
+  // Option 1: Just redirect the user to the image URL (simple + fast)
+  res.redirect(imageUrl);
+});
 
 // Export Express app for Vercel
 module.exports = app;
