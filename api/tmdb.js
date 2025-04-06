@@ -38,41 +38,6 @@ app.get("/api/tmdb", async (req, res) => {
       .json({ error: "Failed to fetch data", details: error.message });
   }
 });
-const https = require("https");
-
-app.get("/api/tmdb/image", (req, res) => {
-  const { file_path, size = "w500" } = req.query;
-
-  if (!file_path) {
-    return res.status(400).json({ error: "file_path is required" });
-  }
-
-  const safePath = file_path.startsWith("/") ? file_path : `/${file_path}`;
-  const imageUrl = `https://image.tmdb.org/t/p/${size}${safePath}`;
-
-  https
-    .get(imageUrl, (imageRes) => {
-      if (imageRes.statusCode !== 200) {
-        return res
-          .status(imageRes.statusCode)
-          .json({ error: "Image not found", status: imageRes.statusCode });
-      }
-
-      res.setHeader(
-        "Content-Type",
-        imageRes.headers["content-type"] || "image/jpeg"
-      );
-      res.setHeader("Cache-Control", "public, max-age=86400");
-
-      imageRes.pipe(res);
-    })
-    .on("error", (err) => {
-      console.error("Image fetch failed:", err);
-      res
-        .status(500)
-        .json({ error: "Failed to proxy image", details: err.message });
-    });
-});
 
 // Export Express app for Vercel
 module.exports = app;
