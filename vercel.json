@@ -1,5 +1,8 @@
 {
   "version": 2,
   "builds": [{ "src": "api/tmdb.js", "use": "@vercel/node" }],
-  "routes": [{ "src": "/api/tmdb", "dest": "/api/tmdb.js" }]
+  "routes": [
+    { "src": "/api/tmdb", "dest": "/api/tmdb.js" },
+    { "src": "/api/image", "dest": "/api/image.js" }
+  ]
 }
