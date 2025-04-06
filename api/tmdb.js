@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
-
+const https = require("https");
 const app = express();
 app.use(cors({ origin: "*" })); // Allow all origins
 
@@ -38,6 +38,8 @@ app.get("/api/tmdb", async (req, res) => {
       .json({ error: "Failed to fetch data", details: error.message });
   }
 });
+const https = require("https");
+
 app.get("/api/tmdb/image", (req, res) => {
   const { file_path, size = "w500" } = req.query;
 
@@ -50,10 +52,22 @@ app.get("/api/tmdb/image", (req, res) => {
 
   https
     .get(imageUrl, (imageRes) => {
-      res.setHeader("Content-Type", imageRes.headers["content-type"]);
+      if (imageRes.statusCode !== 200) {
+        return res
+          .status(imageRes.statusCode)
+          .json({ error: "Image not found", status: imageRes.statusCode });
+      }
+
+      res.setHeader(
+        "Content-Type",
+        imageRes.headers["content-type"] || "image/jpeg"
+      );
+      res.setHeader("Cache-Control", "public, max-age=86400");
+
       imageRes.pipe(res);
     })
     .on("error", (err) => {
+      console.error("Image fetch failed:", err);
       res
         .status(500)
         .json({ error: "Failed to proxy image", details: err.message });
