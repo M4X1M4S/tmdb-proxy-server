@@ -1,17 +1,21 @@
-export default async function handler(req, res) {
-  const { file_path, size = "w500" } = req.query;
+const axios = require("axios");
 
-  const imageUrl = `https://image.tmdb.org/t/p/${size}${file_path}`;
-
+module.exports = async (req, res) => {
   try {
-    const tmdbRes = await fetch(imageUrl);
-    const buffer = await tmdbRes.arrayBuffer();
+    const { file_path, size = "original" } = req.query;
 
-    res.setHeader("Content-Type", tmdbRes.headers.get("Content-Type"));
-    res.send(Buffer.from(buffer));
+    if (!file_path) {
+      return res.status(400).json({ error: "file_path is required" });
+    }
+
+    const imageUrl = `https://image.tmdb.org/t/p/${size}${file_path}`;
+    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+
+    res.setHeader("Content-Type", response.headers["content-type"]);
+    res.send(Buffer.from(response.data, "binary"));
   } catch (error) {
     res
-      .status(500)
+      .status(error.response?.status || 500)
       .json({ error: "Failed to fetch image", details: error.message });
   }
-}
+};
